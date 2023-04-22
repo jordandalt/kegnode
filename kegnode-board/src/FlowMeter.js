@@ -1,29 +1,39 @@
 'use strict'
 
+const ACTIVE = 1;
+const IDLE = 0;
+
 export default class FlowMeter {
-  constructor() {
-    this.maxDelta = 0;
-    this.lastTicks = 0;
-    this.totalTicks = 0;
+  constructor(meterIdentity, tapIdentity, ticksToVolume) {
+    this.identity = meterIdentity;
+    this.tapIdentity = tapIdentity;
+    this.ticksToVolume = ticksToVolume;
+    this.currentTickCount = 0;
+    this.lastTickTimestamp = null;
+    this.status = IDLE;
   }
 
-  setTicks = (ticks) => {
-    console.log(`Set Ticks: ticks=${ticks} last=${this.lastTicks} total=${this.totalTicks}`);
-    let delta = 0;
-    if (this.lastTicks !== 0) {
-      delta = ticks - this.lastTicks;
-      if (delta > 0 && (delta !== this.maxDelta || delta <= this.maxDelta)) {
-        this.totalTicks += delta;
-      } else {
-        console.error(`Bad ticks report: ticks=${ticks} last=${this.lastTicks}`);
-        delta = 0;
-      }
-    }
-    this.lastTicks = ticks;
-    return delta;
+  addTick = () => {
+    // toggle flowmeter to active, iterate tick count, update last timestamp
+    this.status = ACTIVE;
+    this.currentTickCount++;
+    this.lastTickTimestamp = now();
+  }
+  makeIdle = () => {
+    this.status = IDLE;
+    this.currentTickCount = 0;
   }
 
-  getTicks = () => this.totalTicks;
-
-  getLastReading = () => this.lastTicks;
+  getCurrentFlowVolume = () => {
+    return this.currentTickCount * this.ticksToVolume;
+  }
+  getTapIdentity = () => this.tapIdentity;
+  getLastTickTimestamp = () => this.lastTickTimestamp;
+  toJSON = () => ({
+    meterIdentity: this.identity,
+    tapIdentity: this.tapIdentity,
+    currentVolume: this.getCurrentFlowVolume(),
+    lastTickTimestamp: this.lastTickTimestamp,
+    status: this.status,
+  });
 }

@@ -1,15 +1,23 @@
 'use strict'
 
 export default class Pour {
-  constructor() {
-    this.maxDelta = 0;
-    this.lastTicks = 0;
-    this.totalTicks = 0;
+  constructor(tapIdentity) {
+    this.tapIdentity = tapIdentity;
+    this.startTimestamp = now();
+    this.endTimestamp = null;
+    this.totalVolume = null;
   }
 
-  getUpdateEvent
+  endPourWithTimestampAndVolume = (endTimestamp, totalVolume) => {
+    this.endTimestamp = endTimestamp;
+    this.totalVolume = totalVolume;
+  }
 
-  addTicks
-  
-  
+  getTapIdentity = () => this.tapIdentity;
+  toJSON = () => ({
+    tapIdentity: this.tapIdentity,
+    startTimestamp: this.startTimestamp,
+    endTimstamp: this.endTimestamp,
+    totalVolume: this.totalVolume,
+  });
 }
