@@ -1,8 +1,8 @@
 import { SerialPort } from "serialport";
 import { ReadlineParser } from "@serialport/parser-readline";
 
-import FlowMeter from "./src/FlowMeter";
-import Pour from "./src/Pour";
+import FlowMeter from "./src/FlowMeter.js";
+import Pour from "./src/Pour.js";
 
 const FLOW_METER_TO_TAP_MAPPING = {
   flow0: "tap0",
@@ -10,17 +10,20 @@ const FLOW_METER_TO_TAP_MAPPING = {
   flow2: "tap2",
   flow3: "tap3",
 };
-const MS_TO_IDLE = 10000;
-
+const MS_TO_IDLE = 1000;
+const meterRegex = /flow[0-3]/;
 const flowMeters = {};
 const activePours = [];
 const completedPours = [];
 
-const port = new SerialPort({ path: "/dev/ttyACM0", baudRate: 115200 });
+const path = process.env.PATH_TO_ARDUINO || "/dev/ttyACM0";
+const port = new SerialPort({ path, baudRate: 115200 });
 const parser = port.pipe(new ReadlineParser({ delimiter: "\r\n" }));
 
 const pushCompletePourToTap = async (completedPour) => {
-  fetch(`http://localhost:3000/taps/${completedPour.getTapIdentity()}`, {
+  const tapIdentity =
+    FLOW_METER_TO_TAP_MAPPING[completedPour.getMeterIdentity()];
+  fetch(`http://localhost:3000/taps/${tapIdentity}`, {
     headers: { "Content-Type": "application/json; charset=utf-8" },
     method: "POST",
     body: JSON.stringify(completedPour.toJSON()),
@@ -40,9 +43,8 @@ port.on("open", () => {
 });
 
 parser.on("data", (data) => {
-  console.log(data);
   // parse out monitor identity
-  const parsedMeterIdentity = null;
+  const parsedMeterIdentity = meterRegex.exec(data);
   if (parsedMeterIdentity) {
     const currentMeter = flowMeters[parsedMeterIdentity];
 
@@ -51,15 +53,17 @@ parser.on("data", (data) => {
 
     // find activePour or create new pour
     const activePourIndex = activePours.findIndex(
-      (pour) => pour.getTapIdentity() === currentMeter.getTapIdentity()
+      (pour) => pour.getMeterIdentity() === currentMeter.getIdentity()
     );
     let activePour =
       activePourIndex < 0
-        ? new Pour(currentMeter.tapIdentity())
+        ? new Pour(currentMeter.getIdentity())
         : activePours.splice(activePourIndex, 1)[0];
 
-    const currentTimestamp = now();
-    const closeLastPour = currentTimestamp - lastTickTimestamp > MS_TO_IDLE;
+    const currentTimestamp = Date.now();
+
+    const closeLastPour =
+      currentTimestamp - lastTickTimestamp > MS_TO_IDLE && lastTickTimestamp;
     if (closeLastPour && activePourIndex > 0) {
       // if last tick timestamp exceeds the MS_TO_IDLE threshold,
       //   finish previous pour before creating a new one
@@ -70,17 +74,39 @@ parser.on("data", (data) => {
       currentMeter.makeIdle();
       completedPours.push(activePour);
       // @TODO: uncomment when ready
+      // if pour volume is above threshold, push to server
       // pushCompletePourToTap(activePour);
-      console.log(`KNB: Completing last pour for flow meter ${parsedMeterIdentity}`);
-      activePour = new Pour(currentMeter.tapIdentity());
-    } else if (closeLastPour && activePourIndex < 0) {
-      throw new Error(
-        `Unable to complete last pour for meter ${parsedMeterIdentity}: no matching pour found!`
-      );
+      console.log(`KNB: ${parsedMeterIdentity} Pour Completed`);
+      activePour = new Pour(currentMeter.getIdentity());
     }
 
     currentMeter.addTick();
     activePours.push(activePour);
-    console.log(`KNB: Flow meter ${parsedMeterIdentity} is actively pouring`);
+    console.log(`KNB: ${parsedMeterIdentity} Pouring`);
+  } else {
+    // Let's use the health signal to close any active pours that meet the idle threshold
+    activePours.map((pour, index) => {
+      const meter = flowMeters[pour.getMeterIdentity()];
+      const lastMeterTimestamp = meter.getLastTickTimestamp();
+      const currentTimestamp = Date.now();
+
+      // if last tick timestamp exceeds the MS_TO_IDLE threshold, finish pour
+      if (
+        currentTimestamp - lastMeterTimestamp > MS_TO_IDLE &&
+        lastMeterTimestamp
+      ) {
+        pour.endPourWithTimestampAndVolume(
+          lastMeterTimestamp,
+          meter.getCurrentFlowVolume()
+        );
+        meter.makeIdle();
+        completedPours.push(pour);
+        activePours.splice(index, 1);
+        // @TODO: uncomment when ready
+        // if pour volume is above threshold, push to server
+        // pushCompletePourToTap(activePour);
+        console.log(`KNB: ${meter.getIdentity()} Pour Completed`);
+      }
+    });
   }
 });

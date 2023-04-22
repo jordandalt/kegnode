@@ -6,11 +6,14 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./index.js"
+    "start": "nodenv ."
   },
   "author": "Jordan Dalton",
   "license": "ISC",
   "dependencies": {
     "serialport": "^10.5.0"
+  },
+  "devDependencies": {
+    "node-env-run": "^4.0.2"
   }
 }

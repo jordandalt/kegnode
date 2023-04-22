@@ -17,7 +17,7 @@ export default class FlowMeter {
     // toggle flowmeter to active, iterate tick count, update last timestamp
     this.status = ACTIVE;
     this.currentTickCount++;
-    this.lastTickTimestamp = now();
+    this.lastTickTimestamp = Date.now();
   }
   makeIdle = () => {
     this.status = IDLE;
@@ -27,7 +27,7 @@ export default class FlowMeter {
   getCurrentFlowVolume = () => {
     return this.currentTickCount * this.ticksToVolume;
   }
-  getTapIdentity = () => this.tapIdentity;
+  getIdentity = () => this.identity;
   getLastTickTimestamp = () => this.lastTickTimestamp;
   toJSON = () => ({
     meterIdentity: this.identity,
