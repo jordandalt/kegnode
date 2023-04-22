@@ -1,0 +1,16 @@
+{
+  "name": "kegnode-board",
+  "version": "0.1.0",
+  "description": "Arduino flow monitoring utility for Kegnode project",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./index.js"
+  },
+  "author": "Jordan Dalton",
+  "license": "ISC",
+  "dependencies": {
+    "serialport": "^10.5.0"
+  }
+}
