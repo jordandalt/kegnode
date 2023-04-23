@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 
 const ACTIVE = 1;
 const IDLE = 0;
@@ -18,15 +18,15 @@ export default class FlowMeter {
     this.status = ACTIVE;
     this.currentTickCount++;
     this.lastTickTimestamp = Date.now();
-  }
+  };
   makeIdle = () => {
     this.status = IDLE;
     this.currentTickCount = 0;
-  }
+  };
 
   getCurrentFlowVolume = () => {
     return this.currentTickCount * this.ticksToVolume;
-  }
+  };
   getIdentity = () => this.identity;
   getLastTickTimestamp = () => this.lastTickTimestamp;
   toJSON = () => ({

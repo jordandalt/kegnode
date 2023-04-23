@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 
 export default class Pour {
   constructor(meterIdentity) {
@@ -14,6 +14,7 @@ export default class Pour {
   };
 
   getMeterIdentity = () => this.meterIdentity;
+  getPourVolume = () => this.totalVolume;
   toJSON = () => ({
     meterIdentity: this.meterIdentity,
     startTimestamp: this.startTimestamp,

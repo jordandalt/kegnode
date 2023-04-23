@@ -20,7 +20,7 @@
   "scripts": {
     "start": "npm run prod",
     "build": "npm-run-all clean transpile",
-    "server": "node ./dist-server/bin/www",
+    "server": "nodenv ./dist-server/bin/www.js",
     "dev": "NODE_ENV=development npm-run-all build server",
     "prod": "NODE_ENV=production npm-run-all build server",
     "transpile": "babel ./server --out-dir dist-server",
@@ -38,16 +38,21 @@
     "morgan": "~1.9.1",
     "nodemon": "^2.0.22",
     "npm-run-all": "^4.1.5",
+    "pg": "^8.10.0",
+    "pg-promise": "^11.4.3",
     "rimraf": "^5.0.0",
+    "sequelize": "^6.31.0",
+    "sequelize-cli": "^6.6.0",
     "serialport": "^10.5.0",
     "socket.io": "^4.6.1"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "node-env-run": "^4.0.2"
   },
   "babel": {
     "presets": [
       "@babel/preset-env"
     ]
-  },
-  "devDependencies": {
-    "jest": "^29.5.0"
   }
 }

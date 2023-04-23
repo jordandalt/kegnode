@@ -11,7 +11,8 @@ const FLOW_METER_TO_TAP_MAPPING = {
   flow3: "tap3",
 };
 const MS_TO_IDLE = 1000;
-const meterRegex = /flow[0-3]/;
+const MINIMUM_VOLUME = 10; // ignore pours of less than 10 mL
+const METER_REGEX = /flow[0-3]/;
 const flowMeters = {};
 const activePours = [];
 const completedPours = [];
@@ -44,7 +45,7 @@ port.on("open", () => {
 
 parser.on("data", (data) => {
   // parse out monitor identity
-  const parsedMeterIdentity = meterRegex.exec(data);
+  const parsedMeterIdentity = METER_REGEX.exec(data);
   if (parsedMeterIdentity) {
     const currentMeter = flowMeters[parsedMeterIdentity];
 
@@ -55,6 +56,9 @@ parser.on("data", (data) => {
     const activePourIndex = activePours.findIndex(
       (pour) => pour.getMeterIdentity() === currentMeter.getIdentity()
     );
+    if (activePourIndex < 0) {
+      console.log(`KNB: ${parsedMeterIdentity} Starting Pour`);
+    }
     let activePour =
       activePourIndex < 0
         ? new Pour(currentMeter.getIdentity())
@@ -73,16 +77,16 @@ parser.on("data", (data) => {
       );
       currentMeter.makeIdle();
       completedPours.push(activePour);
-      // @TODO: uncomment when ready
       // if pour volume is above threshold, push to server
-      // pushCompletePourToTap(activePour);
+      if (activePour.getPourVolume() > MINIMUM_VOLUME) {
+        pushCompletePourToTap(activePour);
+      }
       console.log(`KNB: ${parsedMeterIdentity} Pour Completed`);
       activePour = new Pour(currentMeter.getIdentity());
     }
 
     currentMeter.addTick();
     activePours.push(activePour);
-    console.log(`KNB: ${parsedMeterIdentity} Pouring`);
   } else {
     // Let's use the health signal to close any active pours that meet the idle threshold
     activePours.map((pour, index) => {
@@ -102,9 +106,10 @@ parser.on("data", (data) => {
         meter.makeIdle();
         completedPours.push(pour);
         activePours.splice(index, 1);
-        // @TODO: uncomment when ready
         // if pour volume is above threshold, push to server
-        // pushCompletePourToTap(activePour);
+        if (pour.getPourVolume() > MINIMUM_VOLUME) {
+          pushCompletePourToTap(pour);
+        }
         console.log(`KNB: ${meter.getIdentity()} Pour Completed`);
       }
     });

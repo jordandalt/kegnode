@@ -11,6 +11,7 @@ Node application to read from the Arduino's serial output and POST pour volumes 
 Express server providing endpoints for:
 - Create/Update keg
 - Assign keg to tap
+- Record pour for tap
 - Getting tap status (current keg, current volume)
 
 ## KegNode-MySQL

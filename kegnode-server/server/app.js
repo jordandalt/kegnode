@@ -1,18 +1,24 @@
-// app.js
-import express from 'express';
-import path from 'path';
-import cookieParser from 'cookie-parser';
-import logger from 'morgan';
+import express from "express";
+import path from "path";
+import cookieParser from "cookie-parser";
+import logger from "morgan";
 
-import indexRouter from './api/index';
+import indexRouter from "./interfaces/index";
+import tapsRouter from "./interfaces/Taps";
 
 const app = express();
 
-app.use(logger('dev'));
+app.use(logger("dev"));
+
 app.use(express.json());
+
 app.use(express.urlencoded({ extended: false }));
+
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, '../public')));
-app.use('/', indexRouter);
+
+app.use(express.static(path.join(__dirname, "../public")));
+
+app.use("/", indexRouter);
+app.use("/taps", tapsRouter);
 
 export default app;
