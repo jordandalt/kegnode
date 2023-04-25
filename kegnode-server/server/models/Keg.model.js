@@ -1,6 +1,6 @@
 const Keg = (sequelize, DataTypes) => {
   return sequelize.define("Keg", {
-    kegIdentity: {
+    identity: {
       primaryKey: true,
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
@@ -15,15 +15,16 @@ const Keg = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
     },
     initialVolume: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.INTEGER,
+    },
+    currentVolume: {
+      type: DataTypes.INTEGER,
     },
     tappedOn: {
       type: DataTypes.DATE,
-      field: "tapped_on",
     },
     kickedOn: {
       type: DataTypes.DATE,
-      field: "kicked_on",
     },
   });
 };

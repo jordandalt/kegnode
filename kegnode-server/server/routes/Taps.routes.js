@@ -7,9 +7,12 @@ const router = express.Router();
 router.get("/", TapsController.getTaps);
 
 // GET tap by id
-router.get("/:tapId", TapsController.getTap);
+router.get("/:tapIdentity", TapsController.getTap);
 
 // POST pour to tap
-router.post("/:tapId/pour", TapsController.recordPourForTap);
+router.post("/:tapIdentity/pour", TapsController.recordPourForTap);
+
+// PUT tap keg
+router.put("/:tapIdentity/keg/:kegIdentity", TapsController.tapKeg);
 
 export default router;

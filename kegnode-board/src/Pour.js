@@ -18,7 +18,7 @@ export default class Pour {
   toJSON = () => ({
     meterIdentity: this.meterIdentity,
     startTimestamp: this.startTimestamp,
-    endTimstamp: this.endTimestamp,
+    endTimestamp: this.endTimestamp,
     totalVolume: this.totalVolume,
   });
 }

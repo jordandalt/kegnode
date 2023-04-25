@@ -4,22 +4,22 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     return queryInterface.bulkInsert("Taps", [
       {
-        tapIdentity: "tap0",
+        identity: "tap0",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        tapIdentity: "tap1",
+        identity: "tap1",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        tapIdentity: "tap2",
+        identity: "tap2",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        tapIdentity: "tap3",
+        identity: "tap3",
         createdAt: new Date(),
         updatedAt: new Date(),
       },

@@ -4,6 +4,8 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 
 import indexRouter from './routes';
+import kegsRouter from "./routes/Kegs.routes";
+
 import tapsRouter from "./routes/Taps.routes";
 
 import db from './models';
@@ -22,9 +24,13 @@ app.use(express.static(path.join(__dirname, "../public")));
 
 // Models
 db.sequelize.sync();
+// db.sequelize.sync({ force: true }).then(() => {
+//   console.log("Drop and re-sync db.");
+// });
 
 // Routes/Controllers
 app.use("/", indexRouter);
 app.use("/taps", tapsRouter);
+app.use("/kegs", kegsRouter);
 
 export default app;

@@ -1,33 +1,74 @@
-import db from '../models';
+import db from "../models";
 
 const Tap = db.Taps;
 const Keg = db.Kegs;
 const Pour = db.Pours;
 
 export const getTap = async (tapIdentity) => {
-  return Tap.findByPk(tapIdentity);
-}
+  return Tap.findByPk(tapIdentity, {
+    include: [
+      {
+        model: Keg,
+        include: [{ model: Pour }],
+      },
+    ],
+  });
+};
 
 export const getAllTaps = () => {
-  return Tap.findAll();
-}
+  return Tap.findAll({
+    include: [
+      {
+        model: Keg,
+        include: [{ model: Pour }],
+      },
+    ],
+  });
+};
 
-// export const attachKegToTap = (tapIdentity, kegIdentity) => {
-//   const tap = this.tapRepository.findByIdentity(tapIdentity);
-//   const keg = this.kegRepository.findByIdentity(kegIdentity);
-// };
+export const attachKegToTap = async (tapIdentity, kegIdentity) => {
+  const tap = await Tap.findByPk(tapIdentity);
+  const keg = await Keg.findByPk(kegIdentity);
+  if (keg.kickedOn) {
+    // Don't attach an empty keg to a tap
+    return null;
+  }
+  tap.setKeg(keg);
+  keg.tappedOn = Date.now();
+  await keg.save();
+  return tap.save();
+};
 
-// export const getTapStatus = (tapIdentity) => {
-//   const tap = this.tapRepository.findByIdentity(tapIdentity);
-//   const keg = this.kegRepository.findByIdentity(tap.getCurrentKegIdentity());
-//   return {
-//     tapIdentity,
-//     tapStatus: tap.getStatus(),
-//     kegLevel: keg ? keg.getLevel() : null,
-//   };
-// };
+export const recordPour = async (tapIdentity, pourObject) => {
+  const tap = await Tap.findByPk(tapIdentity, { include: Keg });
+  const keg = tap.Keg;
+  if (!keg) {
+    // We need a tapped keg to record a pour
+    return null;
+  }
 
-// export const recordPour = (tapIdentity, pourObject) => {
-//   const tap = this.tapRepository.findByIdentity(tapIdentity);
-//   const pour = this.pourRepository.createPourFromObject(pourObject);
-// };
+  const {
+    meterIdentity,
+    startTimestamp,
+    endTimestamp,
+    totalVolume: volume,
+  } = pourObject;
+  const newKegVolume = keg.currentVolume - volume;
+  const startedOn = new Date(startTimestamp);
+  const endedOn = new Date(endTimestamp);
+  const newPour = await Pour.create({
+    meterIdentity,
+    volume,
+    startedOn,
+    endedOn,
+  });
+
+  keg.currentVolume = newKegVolume >= 0 ? newKegVolume : 0;
+  if (newKegVolume <= 0) {
+    // We kicked the keg!
+    keg.kickedOn = new Date();
+  }
+  await keg.addPour(newPour);
+  await keg.save();
+  return tap.save();
+};

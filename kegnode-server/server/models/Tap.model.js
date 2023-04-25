@@ -1,6 +1,6 @@
 const Tap = (sequelize, DataTypes) => {
   return sequelize.define("Tap", {
-    tapIdentity: {
+    identity: {
       unique: true,
       primaryKey: true,
       type: DataTypes.STRING,

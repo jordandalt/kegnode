@@ -17,13 +17,10 @@ db.Taps = Tap(sequelize, DataTypes);
 db.Kegs = Keg(sequelize, DataTypes);
 db.Pours = Pour(sequelize, DataTypes);
 
-db.Taps.hasOne(db.Kegs);
-db.Kegs.belongsTo(db.Taps, {
-  foreignKey: "tapIdentity",
-});
+// This is counter-intuitive, but it's what we have to do if we want the Tap to store the foreign key for Keg
+db.Kegs.hasOne(db.Taps);
+db.Taps.belongsTo(db.Kegs);
 db.Kegs.hasMany(db.Pours);
-db.Pours.belongsTo(db.Kegs, {
-  foreignKey: "kegIdentity",
-});
+db.Pours.belongsTo(db.Kegs);
 
 export default db;
