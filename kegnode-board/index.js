@@ -3,16 +3,14 @@ import { ReadlineParser } from "@serialport/parser-readline";
 
 import FlowMeter from "./src/FlowMeter.js";
 import Pour from "./src/Pour.js";
+import {
+  FLOW_METER_TO_TAP_MAPPING,
+  TICKS_TO_ML,
+  METER_REGEX,
+  MS_TO_IDLE,
+  MINIMUM_VOLUME,
+} from "./src/constants.js";
 
-const FLOW_METER_TO_TAP_MAPPING = {
-  flow0: "tap0",
-  flow1: "tap1",
-  flow2: "tap2",
-  flow3: "tap3",
-};
-const MS_TO_IDLE = 1000;
-const MINIMUM_VOLUME = 10; // ignore pours of less than 10 mL
-const METER_REGEX = /flow[0-3]/;
 const flowMeters = {};
 const activePours = [];
 const completedPours = [];
@@ -39,7 +37,11 @@ port.on("open", () => {
     console.log(
       `KNB: Initializing flow meter ${meterIdentity} for tap ${tapIdentity}`
     );
-    flowMeters[meterIdentity] = new FlowMeter(meterIdentity, tapIdentity, 2);
+    flowMeters[meterIdentity] = new FlowMeter(
+      meterIdentity,
+      tapIdentity,
+      TICKS_TO_ML
+    );
   }
 });
 
