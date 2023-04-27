@@ -31,6 +31,17 @@ export const getTaps = (req, res) => {
     });
 };
 
+export const getOpenTaps = async (req, res) => {
+  try {
+    const taps = await TapService.getOpenTaps();
+    res.send(taps);
+  } catch (error) {
+    res.status(500).send({
+      message: error.message || `Error occurred retrieving open taps.`,
+    });
+  }
+};
+
 export const recordPourForTap = (req, res) => {
   const { tapIdentity } = req.params;
   const pourObject = req.body;
@@ -44,16 +55,14 @@ export const recordPourForTap = (req, res) => {
         });
       }
     })
-    .catch((err) =>
-      {
-        console.error(err);
-        res.status(500).send({
-          message:
-            err.message ||
-            `Error occurred recording pour for tap ${tapIdentity}.`,
-        });
-      }
-    );
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send({
+        message:
+          err.message ||
+          `Error occurred recording pour for tap ${tapIdentity}.`,
+      });
+    });
 };
 
 export const tapKeg = (req, res) => {
@@ -64,7 +73,7 @@ export const tapKeg = (req, res) => {
         res.send(tap);
       } else {
         res.status(400).send({
-          message: `Keg ${kegIdentity} has already kicked and can't be attached to any tap!`
+          message: `Keg ${kegIdentity} has already kicked and can't be attached to any tap!`,
         });
       }
     })

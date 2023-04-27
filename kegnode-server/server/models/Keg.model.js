@@ -5,15 +5,6 @@ const Keg = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
     },
-    brewery: {
-      type: DataTypes.STRING,
-    },
-    beerName: {
-      type: DataTypes.STRING,
-    },
-    beerType: {
-      type: DataTypes.STRING,
-    },
     initialVolume: {
       type: DataTypes.INTEGER,
     },

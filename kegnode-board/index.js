@@ -24,7 +24,7 @@ const parser = port.pipe(new ReadlineParser({ delimiter: "\r\n" }));
 const pushCompletePourToTap = async (completedPour) => {
   const tapIdentity =
     FLOW_METER_TO_TAP_MAPPING[completedPour.getMeterIdentity()];
-  fetch(`http://localhost:3000/taps/${tapIdentity}/pour`, {
+  fetch(`http://localhost:4000/api/taps/${tapIdentity}/pour`, {
     headers: { "Content-Type": "application/json; charset=utf-8" },
     method: "POST",
     body: JSON.stringify(completedPour.toJSON()),

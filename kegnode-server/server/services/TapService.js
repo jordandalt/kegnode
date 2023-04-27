@@ -3,13 +3,14 @@ import db from "../models";
 const Tap = db.Taps;
 const Keg = db.Kegs;
 const Pour = db.Pours;
+const Beer = db.Beers;
 
 export const getTap = async (tapIdentity) => {
   return Tap.findByPk(tapIdentity, {
     include: [
       {
         model: Keg,
-        include: [{ model: Pour }],
+        include: [Pour, Beer],
       },
     ],
   });
@@ -20,11 +21,19 @@ export const getAllTaps = () => {
     include: [
       {
         model: Keg,
-        include: [{ model: Pour }],
+        include: [Pour, Beer],
       },
     ],
+    order: [["identity", "ASC"]],
   });
 };
+
+export const getOpenTaps = () => {
+  return Tap.findAll({
+    order: [["identity", "ASC"]],
+    where: { "KegIdentity": null },
+  });
+}
 
 export const attachKegToTap = async (tapIdentity, kegIdentity) => {
   const tap = await Tap.findByPk(tapIdentity);

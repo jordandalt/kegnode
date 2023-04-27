@@ -3,9 +3,7 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 
-import indexRouter from './routes';
 import kegsRouter from "./routes/Kegs.routes";
-
 import tapsRouter from "./routes/Taps.routes";
 
 import db from './models';
@@ -29,8 +27,7 @@ db.sequelize.sync();
 // });
 
 // Routes/Controllers
-app.use("/", indexRouter);
-app.use("/taps", tapsRouter);
-app.use("/kegs", kegsRouter);
+app.use("/api/taps", tapsRouter);
+app.use("/api/kegs", kegsRouter);
 
 export default app;

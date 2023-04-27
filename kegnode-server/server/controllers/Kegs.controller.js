@@ -31,29 +31,28 @@ export const getKegs = (req, res) => {
     });
 };
 
-export const createKeg = (req, res) => {
-  const kegObject = req.body;
-  KegService.createKeg(kegObject)
-    .then((keg) => {
-      res.send(keg);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || `Error occurred creating keg.`,
-      });
+export const createKeg = async (req, res) => {
+  try {
+    const kegObject = req.body;
+    const keg = await KegService.createKeg(kegObject);
+    res.send(keg);
+  } catch (error) {
+    res.status(500).send({
+      message: error.message || `Error occurred creating keg.`,
     });
+  }
 };
 
-export const updateKeg = (req, res) => {
-  const { kegIdentity } = req.params;
-  const kegObject = req.body;
-  KegService.updateKegOfIdentity(kegIdentity, kegObject)
-    .then((keg) => {
-      res.send(keg);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || `Error occurred updating keg ${kegIdentity}.`,
-      });
+export const updateKeg = async (req, res) => {
+  try {
+    const { kegIdentity } = req.params;
+    const kegObject = req.body;
+    const keg = await KegService.updateKegOfIdentity(kegIdentity, kegObject);
+    res.send(keg);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      message: error.message || `Error occurred updating keg ${kegIdentity}.`,
     });
+  }
 };

@@ -6,6 +6,9 @@ const router = express.Router();
 // GET all taps
 router.get("/", TapsController.getTaps);
 
+// GET open taps
+router.get("/open", TapsController.getOpenTaps);
+
 // GET tap by id
 router.get("/:tapIdentity", TapsController.getTap);
 
