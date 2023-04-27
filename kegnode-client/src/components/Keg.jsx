@@ -47,7 +47,8 @@ const Keg = ({ keg, taps, getKegs, getTaps }) => {
       <Card.Footer>
         <Row>
           <Col sm={8}>
-            Current Volume: {Math.round((currentVolume / initialVolume) * 100)}%
+            Current Volume: {Math.round((currentVolume / initialVolume) * 100)}%<br/>
+            Tapped on: {keg.tappedOn ? new Date(keg.tappedOn).toLocaleDateString() : "N/A"}
           </Col>
           <Col sm={4}>
             <Button

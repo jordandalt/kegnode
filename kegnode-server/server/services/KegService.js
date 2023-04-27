@@ -62,11 +62,18 @@ export const updateKegOfIdentity = async (kegIdentity, kegObject) => {
   } = kegObject;
   const keg = await Keg.findByPk(kegIdentity, { include: [Beer] });
   let tap = null;
+
+  // Let's tap that keg!
   if (tapIdentity && !keg.kickedOn) {
-    // Don't attach an empty keg to a tap
     tap = await Tap.findByPk(tapIdentity);
     await tap.setKeg(keg);
     keg.tappedOn = Date.now();
+  }
+
+  // We may want to occasionally remove a keg from a tap.
+  if (!tapIdentity && keg.tappedOn) {
+    await keg.setTap(null);
+    keg.tappedOn = null;
   }
 
   keg.initialVolume = parseInt(initialVolume);
