@@ -1,6 +1,6 @@
 # KegNode Application
 
-A full-stack Javascript application for real-time monitoring and reporting of my home bar (The Lorraine Street Garage) usage.
+A full-stack Javascript application for real-time monitoring and reporting of my home bar, The Lorraine Street Garage.
 
 ### To Do for Everything:
 - [ ] Containerize with Docker and Docker compose
