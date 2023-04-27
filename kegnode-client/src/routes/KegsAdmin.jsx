@@ -14,7 +14,10 @@ import { useAdminKegs, useAdminTaps } from "../hooks/adminHooks";
 const KegsAdmin = () => {
   const [showKegModal, setShowKegModal] = useState(false);
   const [getKegs, { response, loading, error }] = useAdminKegs();
-  const [getTaps, { response: tapsResponse, loading: tapsLoading, error: tapsError }] = useAdminTaps();
+  const [
+    getTaps,
+    { response: tapsResponse, loading: tapsLoading, error: tapsError },
+  ] = useAdminTaps();
   const kegs = response?.data;
   const taps = tapsResponse?.data;
 
@@ -25,7 +28,8 @@ const KegsAdmin = () => {
     setShowKegModal(false);
   };
 
-  const kegsReady = kegs && kegs.length && taps && taps.length && !tapsLoading && !tapsError;
+  const kegsReady =
+    kegs && kegs.length && taps && taps.length && !tapsLoading && !tapsError;
 
   return (
     <Container className="mt-4 mb-4">
@@ -41,11 +45,20 @@ const KegsAdmin = () => {
       )}
       <Row xs={1} md={2} className="g-4 mb-4">
         {kegsReady
-          ? kegs.map((keg) => (
-              <Col key={keg.identity}>
-                <Keg keg={keg} taps={taps} getKegs={getKegs} getTaps={getTaps}/>
-              </Col>
-            ))
+          ? kegs
+              .sort((firstKeg, secondKeg) =>
+                firstKeg.tappedOn > secondKeg.tappedOn ? 1 : -1
+              )
+              .map((keg) => (
+                <Col key={keg.identity}>
+                  <Keg
+                    keg={keg}
+                    taps={taps}
+                    getKegs={getKegs}
+                    getTaps={getTaps}
+                  />
+                </Col>
+              ))
           : "No kegs found!"}
       </Row>
       <Row>

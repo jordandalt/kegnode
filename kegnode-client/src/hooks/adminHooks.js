@@ -57,7 +57,6 @@ export const useUpsertKeg = () => {
       let response = null;
       if (Object.keys(kegData).includes("identity")) {
         // Update keg
-        console.log(kegData);
         response = await axios.put(`/api/kegs/${kegData.identity}`, kegData);
       } else {
         // Create new keg
