@@ -8,8 +8,6 @@ import {
 } from "react-router-dom";
 
 import Root from "./routes/Root";
-// import AdminDashboard from "./routes/AdminDashboard";
-// import TapsAdmin from "./routes/tapsAdmin";
 import KegsAdmin from "./routes/KegsAdmin";
 import Taps from "./routes/Taps";
 import ErrorPage from "./ErrorPage";
@@ -19,10 +17,7 @@ import reportWebVitals from "./reportWebVitals";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Root />} errorElement={<ErrorPage />}>
-      <Route path="admin" element={<KegsAdmin />}>
-        {/* <Route path="taps" element={<TapsAdmin />} /> */}
-        {/* <Route path="kegs" element={<KegsAdmin />} /> */}
-      </Route>
+      <Route path="admin" element={<KegsAdmin />} />
       <Route path="taps" element={<Taps />} />
     </Route>
   )

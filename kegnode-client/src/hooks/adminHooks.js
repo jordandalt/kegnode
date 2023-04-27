@@ -6,7 +6,7 @@ export const useAdminTaps = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchData = async () => {
+  const getTaps = async () => {
     try {
       const response = await axios.get("/api/taps");
       setResponse(response);
@@ -18,33 +18,10 @@ export const useAdminTaps = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    getTaps();
   }, []);
 
-  return { response, loading, error };
-};
-
-export const useOpenTaps = () => {
-  const [response, setResponse] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const getOpenTaps = async () => {
-    try {
-      const response = await axios.get("/api/taps/open");
-      setResponse(response);
-    } catch (error) {
-      setError(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getOpenTaps();
-  }, []);
-
-  return [getOpenTaps, { response, loading, error }];
+  return [getTaps, { response, loading, error }];
 };
 
 export const useAdminKegs = () => {
@@ -78,8 +55,9 @@ export const useUpsertKeg = () => {
   const createOrUpdateKeg = async (kegData) => {
     try {
       let response = null;
-      if (Object.values(kegData).includes("identity")) {
+      if (Object.keys(kegData).includes("identity")) {
         // Update keg
+        console.log(kegData);
         response = await axios.put(`/api/kegs/${kegData.identity}`, kegData);
       } else {
         // Create new keg
@@ -95,4 +73,23 @@ export const useUpsertKeg = () => {
   };
 
   return [createOrUpdateKeg, { response, loading, error }];
+};
+
+export const useDeleteKeg = () => {
+  const [response, setResponse] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const deleteKeg = async (kegIdentity) => {
+    try {
+      const response = await axios.delete(`/api/kegs/${kegIdentity}`);
+      setResponse(response);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return [deleteKeg, { response, loading, error }];
 };

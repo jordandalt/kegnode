@@ -6,7 +6,7 @@ const router = express.Router();
 // GET all kegs
 router.get("/", KegsController.getKegs);
 
-// GET keg by id
+// GET keg by identity
 router.get("/:kegIdentity", KegsController.getKeg);
 
 // POST create keg
@@ -14,5 +14,8 @@ router.post("/", KegsController.createKeg);
 
 // PUT update keg
 router.put("/:kegIdentity", KegsController.updateKeg);
+
+// DELETE keg by identity
+router.delete("/:kegIdentity", KegsController.deleteKeg);
 
 export default router;

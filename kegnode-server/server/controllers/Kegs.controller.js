@@ -1,22 +1,21 @@
 import * as KegService from "../services/KegService";
 
-export const getKeg = (req, res) => {
-  const { kegIdentity } = req.params;
-  KegService.getKeg(kegIdentity)
-    .then((keg) => {
-      if (keg) {
-        res.send(keg);
-      } else {
-        res.status(404).send({
-          message: `Cannot find Keg with id=${kegIdentity}.`,
-        });
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || `Error occurred retrieving keg ${kegIdentity}.`,
+export const getKeg = async (req, res) => {
+  try {
+    const { kegIdentity } = req.params;
+    const keg = await KegService.getKeg(kegIdentity);
+    if (keg) {
+      res.send(keg);
+    } else {
+      res.status(404).send({
+        message: `Cannot find Keg with id=${kegIdentity}.`,
       });
+    }
+  } catch (error) {
+    res.status(500).send({
+      message: error.message || `Error occurred retrieving keg ${kegIdentity}.`,
     });
+  }
 };
 
 export const getKegs = (req, res) => {
@@ -50,9 +49,27 @@ export const updateKeg = async (req, res) => {
     const keg = await KegService.updateKegOfIdentity(kegIdentity, kegObject);
     res.send(keg);
   } catch (error) {
-    console.error(error);
     res.status(500).send({
       message: error.message || `Error occurred updating keg ${kegIdentity}.`,
+    });
+  }
+};
+
+// @TODO: make this a soft delete instead
+export const deleteKeg = async (req, res) => {
+  try {
+    const { kegIdentity } = req.params;
+    const status = await KegService.deleteKegOfIdentity(kegIdentity);
+    if (status.ok) {
+      res.send(status);
+    } else {
+      res.status(404).send({
+        message: `Cannot find Keg with id=${kegIdentity}.`,
+      });
+    }
+  } catch (error) {
+    res.status(500).send({
+      message: error.message || `Error occurred retrieving keg ${kegIdentity}.`,
     });
   }
 };

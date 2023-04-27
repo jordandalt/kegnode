@@ -5,10 +5,10 @@ import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 
-import { useUpsertKeg } from "../adminHooks";
+import { useUpsertKeg } from "../hooks/adminHooks";
 
 const KegForm = ({ keg = null, handleClose, editKeg = true, taps }) => {
-  const [createOrUpdateKeg, { response, loading, error }] = useUpsertKeg();
+  const [createOrUpdateKeg] = useUpsertKeg();
   const [brewery, setBrewery] = useState(keg?.Beer?.brewery || "");
   const [name, setName] = useState(keg?.Beer?.name || "");
   const [type, setType] = useState(keg?.Beer?.type || "");
@@ -16,7 +16,7 @@ const KegForm = ({ keg = null, handleClose, editKeg = true, taps }) => {
   const [abv, setAbv] = useState(keg?.Beer?.alcoholByVolume || "");
   const [initialVolume, setInitialVolume] = useState(keg?.initialVolume || "");
   const [currentVolume, setCurrentVolume] = useState(keg?.currentVolume || "");
-  const [tapIdentity, setTapIdentity] = useState(keg?.Tap?.identity || null);
+  const [tapIdentity, setTapIdentity] = useState(keg?.Tap?.identity || "");
 
   const kegObject = {
     brewery,
@@ -49,7 +49,7 @@ const KegForm = ({ keg = null, handleClose, editKeg = true, taps }) => {
     setCurrentVolume(keg?.currentVolume || "");
     setTapIdentity(keg?.Tap?.identity || "");
     handleClose();
-  }
+  };
 
   return (
     <Form onSubmit={handleSave}>
@@ -96,7 +96,8 @@ const KegForm = ({ keg = null, handleClose, editKeg = true, taps }) => {
           </Form.Label>
           <Col sm={8}>
             <Form.Control
-              type="textarea"
+              as="textarea"
+              rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -147,7 +148,7 @@ const KegForm = ({ keg = null, handleClose, editKeg = true, taps }) => {
             </InputGroup>
           </Col>
         </Form.Group>
-        <Form.Group as={Row} className="mb-3" controlId="currentVolume">
+        <Form.Group as={Row} className="mb-3" controlId="tapIdentity">
           <Form.Label column sm={4}>
             Tap
           </Form.Label>
@@ -156,14 +157,20 @@ const KegForm = ({ keg = null, handleClose, editKeg = true, taps }) => {
               value={tapIdentity}
               onChange={(e) => setTapIdentity(e.target.value)}
             >
-              <option value={null}>Not tapped</option>
+              <option value={""}>Not tapped</option>
               {taps.map((tap, index) => (
-                <option value={tap.identity}>Tap {index}</option>
+                <option
+                  key={tap.identity}
+                  value={tap.identity}
+                  disabled={tap.KegIdentity}
+                >
+                  {tap.identity}
+                </option>
               ))}
             </Form.Select>
           </Col>
         </Form.Group>
-        <Button variant="secondary" onClick={handleCancel}>
+        <Button variant="secondary" onClick={handleCancel} className="m-1">
           Cancel
         </Button>
         <Button variant="primary" type="submit">

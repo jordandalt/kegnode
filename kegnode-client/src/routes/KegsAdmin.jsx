@@ -9,21 +9,23 @@ import Spinner from "react-bootstrap/Spinner";
 
 import Keg from "../components/Keg";
 import KegForm from "../components/KegForm";
-import { useOpenTaps, useAdminKegs } from "../adminHooks";
+import { useAdminKegs, useAdminTaps } from "../hooks/adminHooks";
 
 const KegsAdmin = () => {
   const [showKegModal, setShowKegModal] = useState(false);
   const [getKegs, { response, loading, error }] = useAdminKegs();
-  const [getOpenTaps, { response: tapsResponse, loading: tapsLoading, error: tapsError }] = useOpenTaps();
+  const [getTaps, { response: tapsResponse, loading: tapsLoading, error: tapsError }] = useAdminTaps();
   const kegs = response?.data;
   const taps = tapsResponse?.data;
 
   const handleShow = () => setShowKegModal(true);
-  const handleClose = () => {
+  const handleCloseModal = () => {
     getKegs();
-    getOpenTaps();
+    getTaps();
     setShowKegModal(false);
   };
+
+  const kegsReady = kegs && kegs.length && taps && taps.length && !tapsLoading && !tapsError;
 
   return (
     <Container className="mt-4">
@@ -38,10 +40,10 @@ const KegsAdmin = () => {
         </Alert>
       )}
       <Row xs={1} md={2} className="g-4 mb-4">
-        {kegs && kegs.length
-          ? kegs.map((keg, index) => (
-              <Col key={index}>
-                <Keg keg={keg} taps={taps} getKegs={getKegs}/>
+        {kegsReady
+          ? kegs.map((keg) => (
+              <Col key={keg.identity}>
+                <Keg keg={keg} taps={taps} getKegs={getKegs} getTaps={getTaps}/>
               </Col>
             ))
           : "No kegs found!"}
@@ -53,12 +55,12 @@ const KegsAdmin = () => {
           </Button>
         </Col>
       </Row>
-      <Modal show={showKegModal} onHide={handleClose}>
+      <Modal show={showKegModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>Create New Keg</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <KegForm handleClose={handleClose} editKeg={true} taps={taps} />
+          <KegForm handleClose={handleCloseModal} editKeg={true} taps={taps} />
         </Modal.Body>
       </Modal>
     </Container>

@@ -90,3 +90,23 @@ export const updateKegOfIdentity = async (kegIdentity, kegObject) => {
   }
   return keg.save();
 };
+
+export const deleteKegOfIdentity = async (kegIdentity) => {
+  const count = await Keg.destroy({
+    where: {
+      identity: kegIdentity,
+    }
+  });
+  const tap = await Tap.findOne({
+    where: {
+      KegIdentity: kegIdentity,
+    }
+  });
+  if (tap) {
+    await tap.setKeg(null);
+  }
+  
+  return {
+    ok: count === 1,
+  };
+};
