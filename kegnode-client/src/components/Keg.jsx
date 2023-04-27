@@ -32,7 +32,9 @@ const Keg = ({ keg, taps, getKegs, getTaps }) => {
   return (
     <Card>
       <Card.Header>
-        {Tap ? Tap.identity : "Not tapped"} | {brewery} {name}
+        <h4>
+          {brewery} {name} | <em>{Tap ? Tap.identity : "Not tapped"}</em>
+        </h4>
       </Card.Header>
       <Card.Body>
         <KegForm
@@ -45,7 +47,7 @@ const Keg = ({ keg, taps, getKegs, getTaps }) => {
       <Card.Footer>
         <Row>
           <Col sm={8}>
-            Current Volume: {(currentVolume / initialVolume) * 100}%
+            Current Volume: {Math.round((currentVolume / initialVolume) * 100)}%
           </Col>
           <Col sm={4}>
             <Button

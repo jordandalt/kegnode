@@ -1,14 +1,17 @@
 import Alert from "react-bootstrap/Alert";
+import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
 import Spinner from "react-bootstrap/Spinner";
 
-import {  useTaps } from "../hooks/tapHooks";
-import TapListing from "../components/TapListing";
+import FullTap from "../components/FullTap";
+import OpenTap from "../components/OpenTap";
+import { useInterval, useTaps } from "../hooks/tapHooks";
 
 const Taps = () => {
   const [getTaps, { response, error, loading }] = useTaps();
 
-  // useInterval(getTaps, 60);
+  useInterval(() => getTaps(), 1000*5);
 
   const taps = response?.data;
   return (
@@ -23,9 +26,14 @@ const Taps = () => {
           `Error loading keg data: ${error.message}`
         </Alert>
       )}
-      {taps && (
-        taps.map(tap => <TapListing tap={tap} />)
-      )}
+      <Row xs={1} md={2} className="g-4">
+        {taps &&
+          taps.map((tap) => (
+            <Col key={tap.identity}>
+              {tap.Keg ? <FullTap tap={tap} /> : <OpenTap tap={tap} />}
+            </Col>
+          ))}
+      </Row>
     </Container>
   );
 };

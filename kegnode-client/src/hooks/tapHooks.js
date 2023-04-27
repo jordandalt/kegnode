@@ -3,23 +3,21 @@ import axios from "axios";
 
 export const useInterval = (callback, delay) => {
   const savedCallback = useRef();
-  
+
   useEffect(() => {
     savedCallback.current = callback;
   }, [callback]);
 
   useEffect(() => {
-    const tick = () => {
+    function tick() {
       savedCallback.current();
     }
     if (delay !== null) {
-      const id= setInterval(tick, delay);
-      return () => {
-        clearInterval(id);
-      };
+      const id = setInterval(tick, delay);
+      return () => clearInterval(id);
     }
-  }, [callback, delay]);
-}
+  }, [delay]);
+};
 
 export const useTaps = () => {
   const [response, setResponse] = useState(null);
