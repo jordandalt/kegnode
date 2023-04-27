@@ -28,7 +28,7 @@ const KegsAdmin = () => {
   const kegsReady = kegs && kegs.length && taps && taps.length && !tapsLoading && !tapsError;
 
   return (
-    <Container className="mt-4">
+    <Container className="mt-4 mb-4">
       {loading && (
         <Spinner animation="border" role="status">
           <span className="visually-hidden">Loading...</span>
