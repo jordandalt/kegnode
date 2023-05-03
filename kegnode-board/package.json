@@ -10,11 +10,8 @@
   },
   "author": "Jordan Dalton",
   "license": "ISC",
-  "engines": {
-      "node": ">18.0.0"
-  },
   "dependencies": {
-    "node-fetch": "^3.3.1",
+    "axios": "^1.4.0",
     "rpio": "^2.4.2",
     "serialport": "^10.5.0"
   },
