@@ -6,11 +6,16 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodenv ."
+    "start": "node ."
   },
   "author": "Jordan Dalton",
   "license": "ISC",
+  "engines": {
+      "node": ">18.0.0"
+  },
   "dependencies": {
+    "node-fetch": "^3.3.1",
+    "rpio": "^2.4.2",
     "serialport": "^10.5.0"
   },
   "devDependencies": {
