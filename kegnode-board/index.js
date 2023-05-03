@@ -6,7 +6,6 @@ import {
   FLOW_METER_TO_TAP_MAPPING,
   FLOW_METER_TO_CHANNEL_MAPPING,
   TICKS_TO_ML,
-  METER_REGEX,
   MS_TO_IDLE,
   MINIMUM_VOLUME,
 } from "./src/constants.js";
@@ -18,14 +17,18 @@ const lastMeters = {};
 const meters = {};
 
 const pushCompletePourToTap = async (completedPour) => {
-    console.log("POSTING TO SERVER");
+  console.log("POSTING TO SERVER");
   const tapIdentity =
     FLOW_METER_TO_TAP_MAPPING[completedPour.getMeterIdentity()];
-  fetch(`http://localhost:4000/api/taps/${tapIdentity}/pour`, {
-    headers: { "Content-Type": "application/json; charset=utf-8" },
-    method: "POST",
-    body: JSON.stringify(completedPour.toJSON()),
-  });
+  try {
+    fetch(`http://localhost:4000/api/taps/${tapIdentity}/pour`, {
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      method: "POST",
+      body: JSON.stringify(completedPour.toJSON()),
+    });
+  } catch (error) {
+    console.error(error.message);
+  }
 };
 
 const logPour = (currentMeter) => {
@@ -47,7 +50,7 @@ const logPour = (currentMeter) => {
   const currentTimestamp = Date.now();
 
   const closeLastPour =
-    (currentTimestamp - lastTickTimestamp > MS_TO_IDLE) && lastTickTimestamp;
+    currentTimestamp - lastTickTimestamp > MS_TO_IDLE && lastTickTimestamp;
   if (closeLastPour && activePourIndex > 0) {
     // if last tick timestamp exceeds the MS_TO_IDLE threshold,
     //   finish previous pour before creating a new one
@@ -61,7 +64,9 @@ const logPour = (currentMeter) => {
     if (activePour.getPourVolume() > MINIMUM_VOLUME) {
       pushCompletePourToTap(activePour);
     }
-    console.log(`KNB: ${currentMeter.getIdentity()} Pour Completed -- ${activePour.getPourVolume()}mL`);
+    console.log(
+      `KNB: ${currentMeter.getIdentity()} Pour Completed -- ${activePour.getPourVolume()}mL`
+    );
     activePour = new Pour(currentMeter.getIdentity());
   }
 
@@ -91,10 +96,12 @@ const closeAllStalePours = () => {
       if (pour.getPourVolume() > MINIMUM_VOLUME) {
         pushCompletePourToTap(pour);
       }
-      console.log(`KNB: ${meter.getIdentity()} Pour Completed -- ${pour.getPourVolume()}mL`);
+      console.log(
+        `KNB: ${meter.getIdentity()} Pour Completed -- ${pour.getPourVolume()}mL`
+      );
     }
   });
-}
+};
 
 for (const [meterIdentity, tapIdentity] of Object.entries(
   FLOW_METER_TO_TAP_MAPPING
@@ -112,9 +119,11 @@ for (const [meterIdentity, tapIdentity] of Object.entries(
   lastMeters[meterIdentity] = meters[meterIdentity] = rpio.read(channelId);
 }
 
-while(true) {
+while (true) {
   let activeTick = false;
-  for (const [meterIdentity, channelId] of Object.entries(FLOW_METER_TO_CHANNEL_MAPPING)) {
+  for (const [meterIdentity, channelId] of Object.entries(
+    FLOW_METER_TO_CHANNEL_MAPPING
+  )) {
     meters[meterIdentity] = rpio.read(channelId);
     // A change indicates meter activity
     if (meters[meterIdentity] !== lastMeters[meterIdentity]) {
@@ -126,7 +135,6 @@ while(true) {
   if (!activeTick) {
     closeAllStalePours();
   }
-  
+
   rpio.msleep(10);
 }
-
