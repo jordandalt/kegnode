@@ -1,4 +1,5 @@
 import rpio from "rpio";
+import axios from "axios";
 
 import FlowMeter from "./src/FlowMeter.js";
 import Pour from "./src/Pour.js";
@@ -17,21 +18,25 @@ const lastMeters = {};
 const meters = {};
 
 const pushCompletePourToTap = async (completedPour) => {
-  console.log("POSTING TO SERVER");
   const tapIdentity =
     FLOW_METER_TO_TAP_MAPPING[completedPour.getMeterIdentity()];
+  const pourBody = JSON.stringify(completedPour.toJSON());
   try {
-    fetch(`http://localhost:4000/api/taps/${tapIdentity}/pour`, {
-      headers: { "Content-Type": "application/json; charset=utf-8" },
-      method: "POST",
-      body: JSON.stringify(completedPour.toJSON()),
-    });
+    const response = await axios.post(
+      `http://localhost:4000/api/taps/${tapIdentity}/pour`,
+      pourBody,
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   } catch (error) {
     console.error(error.message);
+  } finally {
+    console.log(response.data);
   }
 };
 
-const logPour = (currentMeter) => {
+const logPour = async (currentMeter) => {
   // get monitor's last tick timestamp
   const lastTickTimestamp = currentMeter.getLastTickTimestamp();
 
@@ -62,7 +67,7 @@ const logPour = (currentMeter) => {
     completedPours.push(activePour);
     // if pour volume is above threshold, push to server
     if (activePour.getPourVolume() > MINIMUM_VOLUME) {
-      pushCompletePourToTap(activePour);
+      await pushCompletePourToTap(activePour);
     }
     console.log(
       `KNB: ${currentMeter.getIdentity()} Pour Completed -- ${activePour.getPourVolume()}mL`
@@ -74,8 +79,9 @@ const logPour = (currentMeter) => {
   activePours.push(activePour);
 };
 
-const closeAllStalePours = () => {
-  activePours.map((pour, index) => {
+const closeAllStalePours = async () => {
+  for (let index = 0; index < activePours.length; index++) {
+    const pour = activePours[index];
     const meter = flowMeterObjects[pour.getMeterIdentity()];
     const lastMeterTimestamp = meter.getLastTickTimestamp();
     const currentTimestamp = Date.now();
@@ -94,13 +100,13 @@ const closeAllStalePours = () => {
       activePours.splice(index, 1);
       // if pour volume is above threshold, push to server
       if (pour.getPourVolume() > MINIMUM_VOLUME) {
-        pushCompletePourToTap(pour);
+        await pushCompletePourToTap(pour);
       }
       console.log(
         `KNB: ${meter.getIdentity()} Pour Completed -- ${pour.getPourVolume()}mL`
       );
     }
-  });
+  }
 };
 
 for (const [meterIdentity, tapIdentity] of Object.entries(
@@ -121,7 +127,7 @@ for (const [meterIdentity, tapIdentity] of Object.entries(
 
 while (true) {
   let activeTick = false;
-  for (const [meterIdentity, channelId] of Object.entries(
+  for await (const [meterIdentity, channelId] of Object.entries(
     FLOW_METER_TO_CHANNEL_MAPPING
   )) {
     meters[meterIdentity] = rpio.read(channelId);
@@ -133,7 +139,7 @@ while (true) {
     }
   }
   if (!activeTick) {
-    closeAllStalePours();
+    await closeAllStalePours();
   }
 
   rpio.msleep(10);
