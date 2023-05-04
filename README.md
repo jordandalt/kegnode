@@ -11,7 +11,7 @@ A full-stack Javascript application for real-time monitoring and reporting of my
  
 ## KegNode-Board
 
-Node application to read from the Arduino's serial output and POST pour volumes to `Tap` server endpoint. Think carefully about how to handle simultaneous pours (we're reading from serial here, so we're really talking about *near*-simultaneity). Flow monitor to tap assignment is handled in the config, as is flow rate calibration.
+Node application to read from RPIO and POST pour volumes to `Tap` server endpoint. Think carefully about how to handle simultaneous pours (we're reading from serial here, so we're really talking about *near*-simultaneity). Flow monitor to tap assignment is handled in the config, as is flow rate calibration.
 
 To begin, run: `npm start`
 
@@ -43,5 +43,7 @@ To begin, run: `npm start`
 
 ### To Do for Client:
 - [ ] Replace polling for tap listing with websocket listener
+- [ ] Display "kicked on" date for keg admin, but only allow kegs with a current volume > 0 and no kicked on date to be assigned to a tap.
 - [ ] Implement "last keg kicked"
 - [ ] Consumption data visualizations
+- [ ] Untappd integration -- register LSG as drinking spot and display check-ins

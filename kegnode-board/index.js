@@ -29,10 +29,9 @@ const pushCompletePourToTap = async (completedPour) => {
         headers: { "Content-Type": "application/json" },
       }
     );
+      console.log(response.data);
   } catch (error) {
     console.error(error.message);
-  } finally {
-    console.log(response.data);
   }
 };
 
