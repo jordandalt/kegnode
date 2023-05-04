@@ -75,7 +75,7 @@ export const recordPour = async (tapIdentity, pourObject) => {
   keg.currentVolume = newKegVolume >= 0 ? newKegVolume : 0;
   if (newKegVolume <= 0) {
     // We kicked the keg!
-    keg.kickedOn = new Date();
+    tap.lastKegKickedOn = keg.kickedOn = new Date();
   }
   await keg.addPour(newPour);
   await keg.save();

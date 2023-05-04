@@ -67,13 +67,14 @@ export const updateKegOfIdentity = async (kegIdentity, kegObject) => {
   if (tapIdentity && !keg.kickedOn) {
     tap = await Tap.findByPk(tapIdentity);
     await tap.setKeg(keg);
-    keg.tappedOn = Date.now();
+    if (!keg.tappedOn) { // Don't reset tapped on date
+      keg.tappedOn = Date.now();
+    }
   }
 
-  // We may want to occasionally remove a keg from a tap.
+  // Removing a keg from a tap, either to swap or because it kicked
   if (!tapIdentity && keg.tappedOn) {
     await keg.setTap(null);
-    keg.tappedOn = null;
   }
 
   keg.initialVolume = parseInt(initialVolume);

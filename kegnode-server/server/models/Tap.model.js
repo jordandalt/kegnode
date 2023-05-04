@@ -6,6 +6,9 @@ const Tap = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    lastKegKickedOn: {
+      type: DataTypes.DATE,
+    },
   });
 };
 
