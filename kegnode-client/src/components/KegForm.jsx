@@ -158,11 +158,11 @@ const KegForm = ({ keg = null, handleClose, editKeg = true, taps }) => {
               onChange={(e) => setTapIdentity(e.target.value)}
             >
               <option value={""}>Not tapped</option>
-              {taps.map((tap, index) => (
+              {taps.map((tap) => (
                 <option
                   key={tap.identity}
                   value={tap.identity}
-                  disabled={tap.KegIdentity}
+                  disabled={tap.KegIdentity || currentVolume > 0}
                 >
                   {tap.identity}
                 </option>
