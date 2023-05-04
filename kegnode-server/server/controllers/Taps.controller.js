@@ -42,27 +42,24 @@ export const getOpenTaps = async (req, res) => {
   }
 };
 
-export const recordPourForTap = (req, res) => {
+export const recordPourForTap = async (req, res) => {
   const { tapIdentity } = req.params;
   const pourObject = req.body;
-  TapService.recordPour(tapIdentity, pourObject)
-    .then((tap) => {
-      if (tap) {
-        res.send(tap);
-      } else {
-        res.status(400).send({
-          message: `Please confirm tap ${tapIdentity} has a keg before recording a pour!`,
-        });
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send({
-        message:
-          err.message ||
-          `Error occurred recording pour for tap ${tapIdentity}.`,
+  try {
+    const tap = await TapService.recordPour(tapIdentity, pourObject);
+    if (tap) {
+      res.send(tap);
+    } else {
+      res.status(400).send({
+        message: `Please confirm tap ${tapIdentity} has a keg before recording a pour!`,
       });
+    }
+  } catch (error) {
+    res.status(500).send({
+      message:
+        err.message || `Error occurred recording pour for tap ${tapIdentity}.`,
     });
+  }
 };
 
 export const tapKeg = (req, res) => {

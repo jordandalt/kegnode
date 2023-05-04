@@ -1,5 +1,6 @@
-import rpio from "rpio";
 import axios from "axios";
+import https from "https";
+import rpio from "rpio";
 
 import FlowMeter from "./src/FlowMeter.js";
 import Pour from "./src/Pour.js";
@@ -17,19 +18,25 @@ const completedPours = [];
 const lastMeters = {};
 const meters = {};
 
+// Avoiding socket disconnect issues
+const axiosInstance = axios.create({
+  baseUrl: "http://localhost:4000/api/",
+  httpsAgent: new https.agent({ keepAlive: true }),
+});
+
 const pushCompletePourToTap = async (completedPour) => {
   const tapIdentity =
     FLOW_METER_TO_TAP_MAPPING[completedPour.getMeterIdentity()];
   const pourBody = JSON.stringify(completedPour.toJSON());
   try {
-    const response = await axios.post(
-      `http://localhost:4000/api/taps/${tapIdentity}/pour`,
+    const response = await axiosInstance.post(
+      `taps/${tapIdentity}/pour`,
       pourBody,
       {
         headers: { "Content-Type": "application/json" },
       }
     );
-      console.log(response.data);
+    console.log(response.data);
   } catch (error) {
     console.error(error.message);
   }
