@@ -21,7 +21,7 @@ const meters = {};
 // Avoiding socket disconnect issues
 const axiosInstance = axios.create({
   baseUrl: "http://localhost:4000/api/",
-  httpsAgent: new https.agent({ keepAlive: true }),
+  httpsAgent: new https.Agent({ keepAlive: true }),
 });
 
 const pushCompletePourToTap = async (completedPour) => {
