@@ -6,4 +6,5 @@ module.exports = {
   password: process.env.DB_USER_PASS,
   database: "kegnode",
   dialect: "postgres",
+  logging: false,
 };
