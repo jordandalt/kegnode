@@ -12,4 +12,4 @@ export const FLOW_METER_TO_CHANNEL_MAPPING = {
 };
 export const MS_TO_IDLE = 1000;
 export const MINIMUM_VOLUME = 10; // ignore pours of less than 10 mL
-export const TICKS_TO_ML = .5;
+export const TICKS_TO_ML = .6;

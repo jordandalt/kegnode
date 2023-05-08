@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^1.4.0",
+    "axios-retry": "^3.4.0",
     "rpio": "^2.4.2"
   },
   "devDependencies": {

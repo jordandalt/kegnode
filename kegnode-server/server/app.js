@@ -1,4 +1,5 @@
 import express from "express";
+import fs from "fs";
 import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
@@ -6,10 +7,15 @@ import logger from "morgan";
 import kegsRouter from "./routes/Kegs.routes";
 import tapsRouter from "./routes/Taps.routes";
 
-import db from './models';
+import db from "./models";
 
 const app = express();
 
+app.use(
+  logger("common", {
+    stream: fs.createWriteStream("server.log", { flags: "a" }),
+  })
+);
 app.use(logger("dev"));
 
 app.use(express.json());

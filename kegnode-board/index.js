@@ -1,4 +1,5 @@
 import axios from "axios";
+import axiosRetry from "axios-retry";
 import https from "https";
 import rpio from "rpio";
 
@@ -18,9 +19,17 @@ const completedPours = [];
 const lastMeters = {};
 const meters = {};
 
-// Avoiding socket disconnect issues
 const axiosInstance = axios.create({
   httpsAgent: new https.Agent({ keepAlive: true }),
+});
+
+// @TODO Unsure if this is the most elegant solution 
+// (probably better to fix the underlying server/socket issue)
+axiosRetry(axiosInstance, {
+  retries: 3,
+  retryDelay: axiosRetry.exponentialDelay,
+  shouldResetTimeout: true,
+  retryCondition: (error) => error?.response?.status >= 500, // only retry for 5XX errors
 });
 
 const pushCompletePourToTap = async (completedPour) => {
@@ -42,9 +51,7 @@ const pushCompletePourToTap = async (completedPour) => {
 };
 
 const logPour = async (currentMeter) => {
-  // get monitor's last tick timestamp
   const lastTickTimestamp = currentMeter.getLastTickTimestamp();
-
   // find activePour or create new pour
   const activePourIndex = activePours.findIndex(
     (pour) => pour.getMeterIdentity() === currentMeter.getIdentity()
