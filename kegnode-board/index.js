@@ -20,7 +20,6 @@ const meters = {};
 
 // Avoiding socket disconnect issues
 const axiosInstance = axios.create({
-  baseUrl: "http://localhost:4000/api/",
   httpsAgent: new https.Agent({ keepAlive: true }),
 });
 
@@ -30,7 +29,7 @@ const pushCompletePourToTap = async (completedPour) => {
   const pourBody = JSON.stringify(completedPour.toJSON());
   try {
     const response = await axiosInstance.post(
-      `taps/${tapIdentity}/pour`,
+      `http://localhost:4000/api/taps/${tapIdentity}/pour`,
       pourBody,
       {
         headers: { "Content-Type": "application/json" },

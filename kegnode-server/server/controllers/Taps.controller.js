@@ -57,7 +57,7 @@ export const recordPourForTap = async (req, res) => {
   } catch (error) {
     res.status(500).send({
       message:
-        err.message || `Error occurred recording pour for tap ${tapIdentity}.`,
+        error.message || `Error occurred recording pour for tap ${tapIdentity}.`,
     });
   }
 };
