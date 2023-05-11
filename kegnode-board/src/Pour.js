@@ -19,6 +19,6 @@ export default class Pour {
     meterIdentity: this.meterIdentity,
     startTimestamp: this.startTimestamp,
     endTimestamp: this.endTimestamp,
-    totalVolume: this.totalVolume,
+    totalVolume: Math.round(this.totalVolume),
   });
 }
