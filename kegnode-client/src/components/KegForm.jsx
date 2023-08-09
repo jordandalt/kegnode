@@ -162,7 +162,7 @@ const KegForm = ({ keg = null, handleClose, editKeg = true, taps }) => {
                 <option
                   key={tap.identity}
                   value={tap.identity}
-                  disabled={tap.KegIdentity || currentVolume === 0}
+                  disabled={tap.KegIdentity || currentVolume === '0'}
                 >
                   {tap.identity}
                 </option>

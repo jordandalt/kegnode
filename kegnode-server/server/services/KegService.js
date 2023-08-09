@@ -60,6 +60,7 @@ export const updateKegOfIdentity = async (kegIdentity, kegObject) => {
     currentVolume,
     tapIdentity,
   } = kegObject;
+  
   const keg = await Keg.findByPk(kegIdentity, { include: [Beer] });
   let tap = null;
 
@@ -67,18 +68,26 @@ export const updateKegOfIdentity = async (kegIdentity, kegObject) => {
   if (tapIdentity && !keg.kickedOn) {
     tap = await Tap.findByPk(tapIdentity);
     await tap.setKeg(keg);
-    if (!keg.tappedOn) { // Don't reset tapped on date
+    if (!keg.tappedOn) {
+      // Don't reset tapped on date
       keg.tappedOn = Date.now();
     }
   }
 
-  // Removing a keg from a tap, either to swap or because it kicked
+  // Removing a keg from a tap
   if (!tapIdentity && keg.tappedOn) {
+    await keg.setTap(null);
+  }
+
+  // Sometimes, our keg kicks and must be updated manually
+  if (currentVolume <= 0) {
+    keg.kickedOn = Date.now();
     await keg.setTap(null);
   }
 
   keg.initialVolume = parseInt(initialVolume);
   keg.currentVolume = parseInt(currentVolume);
+
   if (keg.Beer) {
     keg.Beer.brewery = brewery;
     keg.Beer.name = name;
